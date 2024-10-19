@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
-const RANGE = 0.02; // kilometers
+const RANGE = 2; // kilometers
 
 app.use(bodyParser.json());
 
