@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
-const RANGE = .02; // kilometers
+const RANGE = .05; // kilometers
 
 app.use(bodyParser.json());
 
@@ -164,7 +164,7 @@ app.get('/', async(req,res)=>{
 app.post('/coordinates', (req, res) => {
   const { latitude, longitude, userID } = req.body;
   console.log('Coordinates received:', latitude, longitude, userID);
-  const user = { id: userID, lat: latitude, lon: longitude , timestamp : Date.now()};
+  const user = { id: userID, lat: latitude, lon: longitude };
   
   // Update the user in both the hash table and segment tree
   updateUser(user);
