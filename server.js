@@ -156,7 +156,7 @@ app.post('/coordinates', (req, res) => {
 
 app.post('/getNearbyCoordinates', (req, res) => {
   const { userID, range } = req.body;
-  console.log('Searching for nearby users:', userID, range);
+  console.log(range);
   const searchRange = range || 0.025; // Default to 25 meters if no range specified
   const nearbyUsers = findNearbyUsers(userID, searchRange);
   res.json(nearbyUsers);
