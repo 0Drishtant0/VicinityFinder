@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
-const RANGE = .025; // kilometers
 
 app.use(bodyParser.json());
 
@@ -12,19 +11,13 @@ class SegmentTree {
   }
 
   update(user) {
-    // Remove the user from all nodes first
     this._remove(this.root, user.id);
-    // Then insert the user with updated coordinates
     this._insert(this.root, user);
   }
 
   _remove(node, userId) {
     if (!node) return;
-
-    // Remove user from current node's users array
     node.users = node.users.filter(u => u.id !== userId);
-
-    // Recursively remove from all children
     if (!node.isLeaf()) {
       this._remove(node.nw, userId);
       this._remove(node.ne, userId);
@@ -35,10 +28,7 @@ class SegmentTree {
 
   _insert(node, user) {
     if (!node.contains(user.lat, user.lon)) return;
-
-    // Add user to current node
     node.users.push(user);
-
     if (node.isLeaf()) return;
 
     const midLat = (node.minLat + node.maxLat) / 2;
@@ -56,7 +46,7 @@ class SegmentTree {
   }
 
   findNearbyUsers(lat, lon, range) {
-    const results = new Set(); // Use Set to avoid duplicates
+    const results = new Set();
     this._findNearbyUsers(this.root, lat, lon, range, results);
     return Array.from(results);
   }
@@ -79,7 +69,7 @@ class SegmentTree {
   }
 
   calculateDistance(point1, point2) {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = this.deg2rad(point2.lat - point1.lat);
     const dLon = this.deg2rad(point2.lon - point1.lon);
     const a = 
@@ -126,21 +116,16 @@ class Node {
   }
 }
 
-// Create a pre-existing empty Segment Tree
 const globalMinLat = -90, globalMaxLat = 90, globalMinLon = -180, globalMaxLon = 180;
 const db = new SegmentTree(globalMinLat, globalMaxLat, globalMinLon, globalMaxLon);
-
-// Create a hash table to store user data
 const users = {};
 
-// Function to update user in the tree
 function updateUser(user) {
   users[user.id] = user;
   db.update(user);
   console.log(`Updated user (ID: ${user.id}) to location (${user.lat}, ${user.lon})`);
 }
 
-// Function to find nearby users
 function findNearbyUsers(userId, range) {
   const user = users[userId];
   
@@ -158,27 +143,24 @@ function findNearbyUsers(userId, range) {
 }
 
 app.get('/', async(req,res)=>{
-  return res.json({ message: 'Server runnung !' });
-})
+  return res.json({ message: 'Server running!' });
+});
 
 app.post('/coordinates', (req, res) => {
   const { latitude, longitude, userID } = req.body;
   console.log('Coordinates received:', latitude, longitude, userID);
   const user = { id: userID, lat: latitude, lon: longitude };
-  
-  // Update the user in both the hash table and segment tree
   updateUser(user);
-  
   res.json({ status: 'Coordinates updated' });
 });
 
 app.post('/getNearbyCoordinates', (req, res) => {
-  const { latitude, longitude, userID } = req.body;
-  const nearbyUsers = findNearbyUsers(userID, RANGE);
+  const { userID, range } = req.body;
+  const searchRange = range || 0.025; // Default to 25 meters if no range specified
+  const nearbyUsers = findNearbyUsers(userID, searchRange);
   res.json(nearbyUsers);
 });
 
-
 app.listen(PORT, () => {
-  console.log(`Server running...`);
+  console.log(`Server running on port ${PORT}`);
 });
