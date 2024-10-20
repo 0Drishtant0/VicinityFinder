@@ -2,6 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
+<<<<<<< HEAD
+=======
+const RANGE = .05; // kilometers
+>>>>>>> 2e23879ab6ca0214085f865c0f3f33a4b6507ef5
 
 app.use(bodyParser.json());
 
@@ -162,5 +166,10 @@ app.post('/getNearbyCoordinates', (req, res) => {
 });
 
 app.listen(PORT, () => {
+<<<<<<< HEAD
   console.log(`Server running on port ${PORT}`);
 });
+=======
+  console.log(`Server running...`);
+});
+>>>>>>> 2e23879ab6ca0214085f865c0f3f33a4b6507ef5
